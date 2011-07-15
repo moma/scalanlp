@@ -18,12 +18,12 @@ class OccurenceCounter(dictionnary: Iterable[String], remove: Set[Char] = Set(',
         }
     }.groupBy{w => w}.map{case(w, l) => w -> l.size}.seq
     
-      dictionnary.zipWithIndex.par.map{
-        case(l, i) => i -> splitExpressions(l).map{w => occ.getOrElse(w, 0)}.reduce(_+_)
-      }
+    dictionnary.zipWithIndex.par.map{
+      case(l, i) => splitExpressions(l).map{w => occ.getOrElse(w, 0)}.reduce(_+_)
+    }
   }
   
-  private def endOfWord(text: String, pos: Int) = (pos == text.size - 1) || (text(pos) == ' ' )
+  private def endOfWord(text: String, pos: Int) = (pos == text.size) || (text(pos) == ' ' )
   
   private def splitExpressions(line: String) = line split("OR") map {_.trim.toLowerCase.filterNot(remove)}
 
