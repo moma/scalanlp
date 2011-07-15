@@ -32,15 +32,19 @@ import scalala.operators.Implicits._;
 
 object Launcher extends App {
   val path = "/home/reuillon/Bureau/"
-  val words = Source.fromFile(path + "FET-terms.txt").getLines.toList
+  val words = Source.fromFile(path + "FET-terms.txt").getLines.map{_.trim}.toList
   val text = "the patient record. Unfortunately, the methods by which these reports are generated are as diverse as the fiscal autonomy of academic clinical departments in a university-based health science center. In this paper, we reporton electronically capturing clinical reports, notes, and other text fragments from several hospital sources and many outpatient clinics autonomous robot. The purpose of microresonators the capture is to feed the ACIS (Advanced Clinical Information System) central patient data repository that soaring is in use at the University of Utah Health Sciences Center (UUHSC)." 
+  //val indexBuilder = Index(_: String, (s: String) => Math.abs(s.hashCode % 5000))
   val occurenceCounter = new OccurenceCounter(words)
+  
   val tompson = new TompsonAbstractProvider(Source.fromFile(path + "IG3O060152").getLines.toIterable)
   
+  val begin = System.currentTimeMillis
   val result = tompson.apply.map {
     occurenceCounter(_).toArray
   }.reduce(_+_)
   
+  println("time: " + (System.currentTimeMillis - begin))
   println(result.zipWithIndex.map{case(r,l) => l -> r}.toList)
   
  }
