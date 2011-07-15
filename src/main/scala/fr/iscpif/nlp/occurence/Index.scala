@@ -20,6 +20,7 @@ package fr.iscpif.nlp.occurence
 
 import scala.collection.immutable.TreeMap
 import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.MapBuilder
 
 object Index {
   def apply(text: String) = {
@@ -33,11 +34,12 @@ object Index {
     
     val wordsPositions = words(text zipWithIndex /*.toLowerCase.zipWithIndex.filterNot(c => remove.contains(c._1))*/) 
       
-    val map: TreeMap[String, Iterable[Int]] = wordsPositions.foldLeft(new TreeMap[String, ListBuffer[Int]]) {
-      case(map, (word, pos)) => map.get(word) match {
-          case None => map + (word -> ListBuffer(pos))
-          case Some(e) => e += pos; map
-        } 
+    val map = wordsPositions.foldLeft(TreeMap.empty[String, ListBuffer[Int]]) {
+      case(m, (word, pos)) => 
+        m.get(word) match {
+          case None => m + (word -> ListBuffer(pos))
+          case Some(l) => l += pos; m
+        }
     }
     
     new Index(map)
@@ -45,7 +47,7 @@ object Index {
   
 }
 
-class Index(val content: TreeMap[String, Iterable[Int]]) {
+class Index(val content: Map[String, Iterable[Int]]) {
   def apply(word: String) = content.getOrElse(word, Iterable.empty)
   override def toString = content.toString
 }
