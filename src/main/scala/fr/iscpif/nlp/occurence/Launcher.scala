@@ -21,13 +21,14 @@ import scala.io.Source
 
 object Launcher extends App {
   val remove = Set(',', '(', ')', ';', '.')
-
-  val words = Source.fromFile("/home/reuillon/Bureau/FET-terms.txt").getLines.flatMap(splitExpressions).toList
+  val path="/home/david/fast/gitcode/scalaISI/"
+  val dictionary=Source.fromFile(path+"FET-terms.txt").getLines.toList
+  val words = dictionary.flatMap(splitExpressions).toList
   val text = "the patient record. Unfortunately, the methods by which these reports are generated are as diverse as the fiscal autonomy of academic clinical departments in a university-based health science center. In this paper, we reporton electronically capturing clinical reports, notes, and other text fragments from several hospital sources and many outpatient clinics autonomous robot. The purpose of microresonators the capture is to feed the ACIS (Advanced Clinical Information System) central patient data repository that soaring is in use at the University of Utah Health Sciences Center (UUHSC)." 
   
   val occ = occurences(text, words)
   
-  val res = Source.fromFile("/home/reuillon/Bureau/FET-terms.txt").getLines.map{
+  val res = dictionary.map{
     l => l -> splitExpressions(l).map{w => occ.getOrElse(w, 0)}.reduce(_+_)
   }
   
