@@ -19,6 +19,16 @@
 package fr.iscpif.nlp.occurence
 
 import scala.actors.threadpool.AtomicInteger
+import scalala.scalar._;
+import scalala.tensor.::;
+import scalala.tensor.mutable._;
+import scalala.tensor.dense._;
+import scalala.tensor.sparse._;
+import scalala.library.Library._;
+import scalala.library.LinearAlgebra._;
+import scalala.library.Statistics._;
+import scalala.library.Plotting._;
+import scalala.operators.Implicits._;
 
 class OccurenceCounter(dictionnary: Iterable[String], remove: Set[Char] = Set(',', '(', ')', ';', '.')) {
   
@@ -26,14 +36,14 @@ class OccurenceCounter(dictionnary: Iterable[String], remove: Set[Char] = Set(',
     val lowerText = text.toLowerCase.filterNot(remove)
     val index = Index(lowerText)
 
-    val ret = Array.fill(dictionnary.size)(new AtomicInteger)
+    val ret = SparseVector.zeros[Int](dictionnary.size)
     
-    val res = dictionnary.par.zipWithIndex.foreach {
+    val res = dictionnary.zipWithIndex.foreach {
       case(w, i) =>
         val indexes = index(w.split(' ').head)
-        indexes.foreach {index => if(lowerText.slice(index, index + w.size) == w && endOfWord(lowerText, index + w.size)) ret(index).incrementAndGet}
+        indexes.foreach {index => if(lowerText.slice(index, index + w.size) == w && endOfWord(lowerText, index + w.size)) ret(index) += 1}
     }
-    ret.map{_.get}
+    ret
   }
   
   private def endOfWord(text: String, pos: Int) = (pos == text.size) || (text(pos) == ' ' )
