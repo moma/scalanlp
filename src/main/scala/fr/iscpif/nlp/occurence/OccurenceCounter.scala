@@ -36,14 +36,17 @@ class OccurenceCounter(dictionnary: Iterable[String], remove: Set[Char] = Set(',
     val lowerText = text.toLowerCase.filterNot(remove)
     val index = Index(lowerText)
 
-    val ret = SparseVector.zeros[Int](dictionnary.size)
-    
-    val res = dictionnary.zipWithIndex.foreach {
+    val vect = SparseVector.zeros[Int](dictionnary.size) 
+    dictionnary.par.zipWithIndex.flatMap {
       case(w, i) =>
         val indexes = index(w.split(' ').head)
-        indexes.foreach {index => if(lowerText.slice(index, index + w.size) == w && endOfWord(lowerText, index + w.size)) ret(index) += 1}
-    }
-    ret
+        indexes.flatMap {
+          index => 
+            if(lowerText.slice(index, index + w.size) == w && endOfWord(lowerText, index + w.size)) List(i)
+            else List.empty
+          }
+    }.seq.foreach{v => vect(v) += 1}
+    vect
   }
   
   private def endOfWord(text: String, pos: Int) = (pos == text.size) || (text(pos) == ' ' )

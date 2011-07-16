@@ -18,6 +18,9 @@
 package fr.iscpif.nlp.occurence
 
 import fr.iscpif.nlp.occurence.dataprovider.TompsonAbstractProvider
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
 import scala.io.Source
 import scalala.scalar._;
 import scalala.tensor.::;
@@ -31,23 +34,36 @@ import scalala.library.Plotting._;
 import scalala.operators.Implicits._;
 
 object Launcher extends App {
- // val path = "/data/tina/Thomson/raw/IF3N101426on/Bureau/"
-  val words = Source.fromFile("/data/tina/Thomson_analysis/FET-terms.txt")("UTF8").getLines.map{_.trim}.toList
-  val text = "the patient record. Unfortunately, the methods by which these reports are generated are as diverse as the fiscal autonomy of academic clinical departments in a university-based health science center. In this paper, we reporton electronically capturing clinical reports, notes, and other text fragments from several hospital sources and many outpatient clinics autonomous robot. The purpose of microresonators the capture is to feed the ACIS (Advanced Clinical Information System) central patient data repository that soaring is in use at the University of Utah Health Sciences Center (UUHSC)." 
-  //val indexBuilder = Index(_: String, (s: String) => Math.abs(s.hashCode % 5000))
-  val occurenceCounter = new OccurenceCounter(words)
-  
+  // val path = "/data/tina/Thomson/raw/IF3N101426on/Bureau/"
+  val words = Source.fromFile("/data/tina/Thomson_analysis/FET-terms.txt")("UTF8")
+  val occurenceCounter = 
+    try new OccurenceCounter(words.getLines.map{_.trim}.toList)
+  finally words.close
+ 
   val tompson = new TompsonAbstractProvider(Source.fromFile("/data/tina/Thomson/raw/IF3N101426")("UTF8").getLines.toStream)
-  
+  val dir = new File("/data/tina/Thomson/raw/")
   val begin = System.currentTimeMillis
-  
-  val result = tompson.apply.view.map {
-    article => occurenceCounter(article())
-  }.reduce(_+_)
-  
+
+  val res = new BufferedWriter(new FileWriter ("/iscpif/users/reuillon/Desktop/thomson-occ.txt"))
+  try {
+    dir.listFiles.foreach {
+      file => 
+      println("processing " + file.getAbsolutePath)
+      val base = Source.fromFile(file)("UTF8")
+      try {
+        val tompson = new TompsonAbstractProvider(base.getLines.toStream)
+        val result = tompson.apply.view.map {
+          article => article.ut -> occurenceCounter(article.content())
+        }.foreach{v => 
+          res.write(v._1 + " : " + 
+                    v._2.toList.zipWithIndex.filterNot(_._1 == 0).map{case(a,b) => (b -> a).toString}.reduceLeftOption(_+", "+_).getOrElse("") +
+                    '\n')
+        }
+      } finally base.close
+    }
+  }finally res.close
   println("time: " + (System.currentTimeMillis - begin))
-  println(result)
-  
- }
+
+}
 
 

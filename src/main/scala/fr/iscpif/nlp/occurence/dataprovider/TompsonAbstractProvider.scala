@@ -22,13 +22,21 @@ package fr.iscpif.nlp.occurence.dataprovider
 class TompsonAbstractProvider(file: Stream[String]) extends AbstractProvider {
   override def apply = abstracts(file)
 
-  private def abstracts(lines: Stream[String]): Stream[() => String] =
-    if(!lines.dropWhile(!_.startsWith("AB ")).head.startsWith("AB ")) Stream.empty
-    else Stream.cons((mergeAbstract(lines) _), abstracts(lines.tail.dropWhile(_.startsWith("-- "))))
+  private def abstracts(lines: Stream[String]): Stream[Abstract] = {
+    val newUT = lines.dropWhile(!_.startsWith("UT "))
+    if(!newUT.head.startsWith("UT ")) Stream.empty
+    else {
+      val ut = newUT.head.slice(3, newUT.head.size)
+      val newArticle = lines.dropWhile(!_.startsWith("AB "))
+      val abs = merge(newArticle) _
+      Stream.cons(new Abstract(ut, abs), abstracts(newArticle.tail.dropWhile(_.startsWith("-- "))))
+    }
+  }
   
-  def mergeAbstract(lines: Stream[String])() =
+  def merge(lines: Stream[String])() =
     Stream.cons(lines.head, lines.tail.takeWhile(_.startsWith("-- "))).map {
       l => l.slice(3, l.size)
     }.reduceLeft(_+_)
  
+  
 }

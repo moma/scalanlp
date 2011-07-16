@@ -19,5 +19,5 @@
 package fr.iscpif.nlp.occurence.dataprovider
 
 trait AbstractProvider {
-  def apply: Stream[() => String]
+  def apply: Stream[Abstract]
 }
