@@ -39,10 +39,11 @@ class OccurenceCounter(dictionnary: Iterable[String], remove: Set[Char] = Set(',
     val vect = SparseVector.zeros[Int](dictionnary.size) 
     dictionnary.par.zipWithIndex.flatMap {
       case(w, i) =>
-        val indexes = index(w.split(' ').head)
+        val splited = w.split(' ')
+        val indexes = index(splited.slice(0, 2).reduceLeft(_ + " " + _))
         indexes.flatMap {
           index => 
-            if(lowerText.slice(index, index + w.size) == w && endOfWord(lowerText, index + w.size)) List(i)
+            if(splited.size <= 2 || lowerText.slice(index, index + w.size) == w && endOfWord(lowerText, index + w.size)) List(i)
             else List.empty
           }
     }.seq.foreach{v => vect(v) += 1}
@@ -50,7 +51,7 @@ class OccurenceCounter(dictionnary: Iterable[String], remove: Set[Char] = Set(',
   }
   
   private def endOfWord(text: String, pos: Int) = (pos == text.size) || (text(pos) == ' ' )
-  
+   
   private def splitExpressions(line: String) = line split("OR") map {_.trim.toLowerCase.filterNot(remove)}
 
 }

@@ -38,7 +38,7 @@ object Launcher extends App {
   val words = Source.fromFile("/data/tina/Thomson_analysis/FET-terms.txt")("UTF8")
   val occurenceCounter = 
     try new OccurenceCounter(words.getLines.map{_.trim}.toList)
-  finally words.close
+    finally words.close
  
   val tompson = new TompsonAbstractProvider(Source.fromFile("/data/tina/Thomson/raw/IF3N101426")("UTF8").getLines.toStream)
   val dir = new File("/data/tina/Thomson/raw/")
