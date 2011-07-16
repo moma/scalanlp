@@ -23,13 +23,13 @@ class TompsonAbstractProvider(file: Stream[String]) extends AbstractProvider {
   override def apply = abstracts(file)
 
   private def abstracts(lines: Stream[String]): Stream[Abstract] = {
-    val newUT = lines.dropWhile(!_.startsWith("UT "))
-    if(!newUT.head.startsWith("UT ")) Stream.empty
+    val newAB = lines.dropWhile(!_.startsWith("AB "))
+    if(!newAB.head.startsWith("AB ")) Stream.empty
     else {
-      val ut = newUT.head.slice(3, newUT.head.size)
-      val newArticle = lines.dropWhile(!_.startsWith("AB "))
-      val abs = merge(newArticle) _
-      Stream.cons(new Abstract(ut, abs), abstracts(newArticle.tail.dropWhile(_.startsWith("-- "))))
+      //val ut = newAB.head.slice(3, newUT.head.size)
+      //val newArticle = lines.dropWhile(!_.startsWith("AB "))
+      val abs = merge(newAB) _
+      Stream.cons(new Abstract(abs), abstracts(newArticle.tail.dropWhile(_.startsWith("-- "))))
     }
   }
   
