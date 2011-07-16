@@ -29,7 +29,7 @@ class TompsonAbstractProvider(file: Stream[String]) extends AbstractProvider {
       //val ut = newAB.head.slice(3, newUT.head.size)
       //val newArticle = lines.dropWhile(!_.startsWith("AB "))
       val abs = merge(newAB) _
-      Stream.cons(new Abstract(abs), abstracts(newArticle.tail.dropWhile(_.startsWith("-- "))))
+      Stream.cons(new Abstract(abs), abstracts(newAB.tail.dropWhile(_.startsWith("-- "))))
     }
   }
   
