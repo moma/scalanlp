@@ -37,7 +37,7 @@ class OccurenceCounter(dictionnary: Iterable[String], remove: Set[Char] = Set(',
     val index = Index(lowerText)
 
     val vect = SparseVector.zeros[Int](dictionnary.size) 
-    dictionnary.par.zipWithIndex.flatMap {
+    dictionnary.zipWithIndex.flatMap {
       case(w, i) =>
         val splited = w.split(' ')
         val indexes = index(splited.slice(0, 2).reduceLeft(_ + " " + _))

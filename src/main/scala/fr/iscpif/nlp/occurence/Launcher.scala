@@ -34,36 +34,7 @@ import scalala.library.Plotting._;
 import scalala.operators.Implicits._;
 
 object Launcher extends App {
-  // val path = "/data/tina/Thomson/raw/IF3N101426on/Bureau/"
-  val words = Source.fromFile("/data/tina/Thomson_analysis/FET-terms.txt")("UTF8")
-  val occurenceCounter = 
-    try new OccurenceCounter(words.getLines.map{_.trim}.toList)
-    finally words.close
- 
-  val tompson = new TompsonAbstractProvider(Source.fromFile("/data/tina/Thomson/raw/IF3N101426")("UTF8").getLines.toStream)
-  val dir = new File("/data/tina/Thomson/raw/")
-  val begin = System.currentTimeMillis
-
-  val res = new BufferedWriter(new FileWriter ("/iscpif/users/reuillon/Desktop/thomson-occ.txt"))
-  try {
-    dir.listFiles.foreach {
-      file => 
-      println("processing " + file.getAbsolutePath)
-      val base = Source.fromFile(file)("UTF8")
-      try {
-        val tompson = new TompsonAbstractProvider(base.getLines.toStream)
-        val result = tompson.apply.view.map {
-          article => article.id -> occurenceCounter(article.content)
-        }.foreach{v => 
-          res.write(v._1 + " : " + 
-                    v._2.toList.zipWithIndex.filterNot(_._1 == 0).map{case(a,b) => (b -> a).toString}.reduceLeftOption(_+", "+_).getOrElse("") +
-                    '\n')
-        }
-      } finally base.close
-    }
-  }finally res.close
-  println("time: " + (System.currentTimeMillis - begin))
-
+  Compute(new File("/data/tina/Thomson_analysis/FET-terms.txt"), new File("/data/tina/Thomson/raw/IN3A01AB"), new File("/iscpif/users/reuillon/Desktop/thomson-occ.txt"))
 }
 
 

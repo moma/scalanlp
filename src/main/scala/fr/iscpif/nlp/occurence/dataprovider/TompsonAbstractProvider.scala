@@ -24,7 +24,7 @@ class TompsonAbstractProvider(file: Stream[String]) extends AbstractProvider {
 
   private def abstracts(lines: Stream[String]): Stream[Abstract] = {
     val newAB = lines.dropWhile(!_.startsWith("AB "))
-    if(!newAB.head.startsWith("AB ")) Stream.empty
+    if(newAB.isEmpty) Stream.empty
     else {
       //val ut = newAB.head.slice(3, newUT.head.size)
       //val newArticle = lines.dropWhile(!_.startsWith("AB "))
