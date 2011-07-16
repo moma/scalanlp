@@ -53,7 +53,7 @@ object Launcher extends App {
       try {
         val tompson = new TompsonAbstractProvider(base.getLines.toStream)
         val result = tompson.apply.view.map {
-          article => article.id -> occurenceCounter(article.content())
+          article => article.id -> occurenceCounter(article.content)
         }.foreach{v => 
           res.write(v._1 + " : " + 
                     v._2.toList.zipWithIndex.filterNot(_._1 == 0).map{case(a,b) => (b -> a).toString}.reduceLeftOption(_+", "+_).getOrElse("") +
