@@ -14,15 +14,15 @@ import scala.io.Source
 object Compute {
   
   def apply(dico: File, articles: File, resFile: File) = {
-    val words = Source.fromFile(dico)("UTF8")
+    val words = Source.fromFile(dico)/*("UTF8")*/
     val occurenceCounter = 
-      try new OccurenceCounter(words.getLines.map{_.trim}.toList)
+      try new OccurenceCounter(words.getLines.map{_.trim}.toStream)
       finally words.close
 
     val res = new BufferedWriter(new FileWriter (resFile))
     try {
       println("processing " + articles.getAbsolutePath)
-      val base = Source.fromFile(articles)("UTF8")
+      val base = Source.fromFile(articles)("ASCII")//("UTF8")
       try {
         val tompson = new TompsonAbstractProvider(base.getLines.toStream)
         val result = tompson.apply.view.map {

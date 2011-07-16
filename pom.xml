@@ -19,18 +19,11 @@
             <artifactId>scalala_${lib.org.scala-lang.scala.version}</artifactId>
             <version>1.0.0.RC2-SNAPSHOT</version>
         </dependency>
-        
     </dependencies>
 
     <properties>
         <lib.org.scala-lang.scala.version>2.9.0</lib.org.scala-lang.scala.version>
-        <maven.scala.version>${lib.org.scala-lang.scala.version}</maven.scala.version>
-     
-        <!-- default configuration for the bundles -->
-        <import.packages>*</import.packages>
-        <export.packages>${bundle.namespace}.*;version="${pom.version}"</export.packages>
-        <bundle.namespace>${project.artifactId}</bundle.namespace>
-        <bundle.activationpolicy>lazy</bundle.activationpolicy>
+        <maven.scala.version>${lib.org.scala-lang.scala.version}</maven.scala.version>     
     </properties>
 
     <build>
@@ -50,7 +43,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -59,20 +51,15 @@
                     <manifestLocation>target/META-INF</manifestLocation>
                     <finalName>${symbolic.name}_${project.version}</finalName>
                     <instructions>
-                        <Bundle-Name>${bundle.name}</Bundle-Name>
-                        <Bundle-SymbolicName>${symbolic.name}</Bundle-SymbolicName>
-                        <Bundle-Description>${bundle.description}</Bundle-Description>
-                        <Import-Package>${import.packages}</Import-Package>
-                        <Export-Package>${export.packages}</Export-Package>
-                        <Embed-Dependency>${embed-dep}</Embed-Dependency>
-                        <Embed-Transitive>${embed-transitive}</Embed-Transitive>
-                        <Eclipse-BuddyPolicy>${eclipse.buddypolicy}</Eclipse-BuddyPolicy>
-                        <Bundle-Activator>${bundle.activator}</Bundle-Activator>
-                        <Bundle-ActivationPolicy>${bundle.activationpolicy}</Bundle-ActivationPolicy>
+                        <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>*;resolution:=optional</Import-Package>
+                        <Export-Package>${project.groupId}.*</Export-Package>
+                        <Embed-Dependency>*;inline=true</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
-
 
         </plugins>
     </build>
