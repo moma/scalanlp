@@ -19,24 +19,24 @@
 package fr.iscpif.nlp.occurence.dataprovider
 
 
-class TompsonAbstractProvider(file: Stream[String]) extends AbstractProvider {
-  override def apply = abstracts(file)
+class TompsonAbstractProvider extends AbstractProvider {
+  override def apply(file: Iterator[String]) = abstracts(file)
 
-  private def abstracts(lines: Stream[String]): Stream[Abstract] = {
-    val newAB = lines.dropWhile(!_.startsWith("AB "))
-    if(newAB.isEmpty) Stream.empty
+  private def abstracts(lines: Iterator[String]): Iterator[Abstract] = {
+   val abIt = lines.dropWhile(!_.startsWith("AB "))
+    if(!abIt.hasNext) Iterator.empty
     else {
-      //val ut = newAB.head.slice(3, newUT.head.size)
-      //val newArticle = lines.dropWhile(!_.startsWith("AB "))
-      val abs = merge(newAB) _
-      Stream.cons(new Abstract(abs), abstracts(newAB.tail.dropWhile(_.startsWith("-- "))))
+      val tailAB = abIt.takeWhile(_.startsWith("-- "))
+      val abs = 
+        (Iterator.single(abIt.next) ++ tailAB).map {
+          l => l.slice(3, l.size)
+        }.reduceLeft(_+_)
+      //println(abs)
+      Iterator.single(new Abstract(abs)) ++ abstracts(abIt.dropWhile(_.startsWith("-- ")))
     }
   }
   
-  def merge(lines: Stream[String])() =
-    Stream.cons(lines.head, lines.tail.takeWhile(_.startsWith("-- "))).map {
-      l => l.slice(3, l.size)
-    }.reduceLeft(_+_)
+
  
   
 }

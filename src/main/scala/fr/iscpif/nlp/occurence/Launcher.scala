@@ -34,7 +34,7 @@ import scalala.library.Plotting._;
 import scalala.operators.Implicits._;
 
 object Launcher extends App {
-  Compute(new File("/data/tina/Thomson_analysis/FET-terms.txt"), new File("/data/tina/Thomson/raw/IN3A01AB"), new File("/iscpif/users/reuillon/Desktop/thomson-occ.txt"))
+  Compute(new File("/data/tina/Thomson_analysis/FET-terms.txt"), new File("/data/tina/Thomson/raw/IN3O090113"), new File("/iscpif/users/reuillon/Desktop/thomson-occ.txt"))
 }
 
 

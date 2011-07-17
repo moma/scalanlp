@@ -5,9 +5,9 @@
 
 package fr.iscpif.nlp.occurence.dataprovider
 
-class Abstract(_content: () => String) {
+class Abstract(val content: String) {
   
-  lazy val content = _content()
+  //lazy val content = _content()
   
   def id = {
     val md = java.security.MessageDigest.getInstance("SHA-1")
