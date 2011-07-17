@@ -22,21 +22,32 @@ package fr.iscpif.nlp.occurence.dataprovider
 class TompsonAbstractProvider extends AbstractProvider {
   override def apply(file: Iterator[String]) = abstracts(file)
 
-  private def abstracts(lines: Iterator[String]): Iterator[Abstract] = {
-   val abIt = lines.dropWhile(!_.startsWith("AB "))
-    if(!abIt.hasNext) Iterator.empty
-    else {
-      val tailAB = abIt.takeWhile(_.startsWith("-- "))
-      val abs = 
-        (Iterator.single(abIt.next) ++ tailAB).map {
-          l => l.slice(3, l.size)
-        }.reduceLeft(_+_)
-      //println(abs)
-      Iterator.single(new Abstract(abs)) ++ abstracts(abIt.dropWhile(_.startsWith("-- ")))
+  private def abstracts(lines: Iterator[String]) =
+    new Iterator[Abstract] {
+      private var _it = lines
+      private var _next = buildAbstract
+      
+      override def next = {
+        val ret = _next
+        _next = buildAbstract
+        ret.getOrElse(null)
+      }
+      
+      override def hasNext = _next.isDefined
+      
+      private def buildAbstract = {
+        _it = _it.dropWhile(!_.startsWith("AB "))
+        if(!_it.hasNext) None
+        else {
+          val tailAB = _it.takeWhile(_.startsWith("-- "))
+          val abs = 
+            (Iterator.single(_it.next) ++ tailAB).map {
+              l => l.slice(3, l.size)
+            }.reduceLeft(_+_)
+          _it = _it.dropWhile(_.startsWith("-- "))
+          Some(new Abstract(abs))
+        }
+      }
     }
-  }
-  
-
- 
   
 }
