@@ -24,28 +24,24 @@ class TompsonAbstractProvider extends AbstractProvider {
 
   private def abstracts(lines: Iterator[String]) =
     new Iterator[Abstract] {
-      private var _it = lines
+      private var it = lines.buffered
       private var _next = buildAbstract
       
       override def next = {
         val ret = _next
         _next = buildAbstract
-        ret.getOrElse(null)
+        ret
       }
       
-      override def hasNext = _next.isDefined
+      override def hasNext = _next != null
       
       private def buildAbstract = {
-        _it = _it.dropWhile(!_.startsWith("AB "))
-        if(!_it.hasNext) None
+        while(it.hasNext && !it.head.startsWith("AB ")) it.next
+        if(!it.hasNext) null
         else {
-          val tailAB = _it.takeWhile(_.startsWith("-- "))
-          val abs = 
-            (Iterator.single(_it.next) ++ tailAB).map {
-              l => l.slice(3, l.size)
-            }.reduceLeft(_+_)
-          _it = _it.dropWhile(_.startsWith("-- "))
-          Some(new Abstract(abs))
+          val abs = new StringBuffer(it.next)
+          while(it.hasNext && it.head.startsWith("-- ")) abs append it.next
+          new Abstract(abs.toString)
         }
       }
     }
